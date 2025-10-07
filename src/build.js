@@ -54,18 +54,57 @@ export function build() {
     const errors = [];
 
     for (const template of templates) {
-      const result = renderTemplate(template.fullPath, template.keyName, data);
+      // Check if this template uses wildcard pattern (e.g., "page*")
+      const wildcardKey = `${template.keyName}*`;
+      const isWildcard =
+        data[wildcardKey] && typeof data[wildcardKey] === "object";
 
-      if (result.success) {
-        // Write the rendered HTML to dist
-        const outputPath = join(template.outputDir, template.outputName);
-        writeRenderedFile(config.distDir, outputPath, result.html);
-        successCount++;
+      if (isWildcard) {
+        // Wildcard mode: generate multiple pages from one template
+        const subKeys = Object.keys(data[wildcardKey]);
+        console.log(
+          `  📄 Wildcard template "${template.keyName}" → generating ${subKeys.length} pages...`
+        );
+
+        for (const subKey of subKeys) {
+          const result = renderTemplate(
+            template.fullPath,
+            template.keyName,
+            data,
+            subKey
+          );
+
+          if (result.success) {
+            // Generate filename: page.casa1.html, page.casa2.html, etc.
+            const outputFileName = `${template.keyName}.${subKey}.html`;
+            const outputPath = join(template.outputDir, outputFileName);
+            writeRenderedFile(config.distDir, outputPath, result.html);
+            successCount++;
+          } else {
+            console.error(`  ✗ ${result.error}`);
+            errors.push(result.error);
+            errorCount++;
+          }
+        }
       } else {
-        // Log error and skip file generation
-        console.error(`✗ ${result.error}`);
-        errors.push(result.error);
-        errorCount++;
+        // Regular mode: single page generation
+        const result = renderTemplate(
+          template.fullPath,
+          template.keyName,
+          data
+        );
+
+        if (result.success) {
+          // Write the rendered HTML to dist
+          const outputPath = join(template.outputDir, template.outputName);
+          writeRenderedFile(config.distDir, outputPath, result.html);
+          successCount++;
+        } else {
+          // Log error and skip file generation
+          console.error(`✗ ${result.error}`);
+          errors.push(result.error);
+          errorCount++;
+        }
       }
     }
 

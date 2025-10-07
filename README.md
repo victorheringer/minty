@@ -10,6 +10,7 @@ Minty is a simple yet powerful tool that generates static HTML websites from Han
 
 - 🎨 Uses Handlebars.js for flexible templating
 - 📦 Simple JSON-based content management
+- ⭐ **Wildcard pattern** for generating multiple pages from one template
 - 🗂️ Maintains folder structure in output
 - 🔄 Automatic static file copying
 - 🚀 Fast and lightweight
@@ -70,6 +71,7 @@ Your JSON file should contain:
 
 1. A **`common`** key with data shared across all pages
 2. Individual keys for each template file
+3. **Optional**: Wildcard keys (ending with `*`) for generating multiple pages from a single template
 
 ### Example `data.json`
 
@@ -95,6 +97,54 @@ Your JSON file should contain:
   }
 }
 ```
+
+### Wildcard Pattern for Multiple Pages
+
+You can generate **multiple pages from a single template** using the wildcard pattern (`*`). Add an asterisk to the end of a key name, and each sub-key will generate a separate HTML file.
+
+**Example with `product*`:**
+
+```json
+{
+  "common": {
+    "siteTitle": "My Store",
+    "footerText": "© 2025 My Store"
+  },
+  "product*": {
+    "laptop": {
+      "title": "Gaming Laptop",
+      "description": "High-performance laptop for gaming",
+      "price": "$1,299"
+    },
+    "phone": {
+      "title": "Smartphone Pro",
+      "description": "Latest smartphone with amazing camera",
+      "price": "$899"
+    },
+    "tablet": {
+      "title": "Tablet Ultra",
+      "description": "Large screen tablet for productivity",
+      "price": "$599"
+    }
+  }
+}
+```
+
+**Template:** `product.template.html`
+
+**Output:**
+
+- `product.laptop.html` (using data from "laptop" + common)
+- `product.phone.html` (using data from "phone" + common)
+- `product.tablet.html` (using data from "tablet" + common)
+
+This feature is perfect for:
+
+- Product catalogs
+- Blog posts
+- Team member profiles
+- Portfolio items
+- Any scenario where you need many similar pages
 
 ## Template Syntax
 
@@ -195,11 +245,23 @@ Minty provides clear error messages:
 - The key in JSON must match the template filename (without `.template.html`)
 - Output files will have `.template` removed
 
+### Single Page Templates
+
 **Examples:**
 
 - `index.template.html` → requires `"index"` key → outputs `index.html`
 - `about.template.html` → requires `"about"` key → outputs `about.html`
 - `blog/post.template.html` → requires `"post"` key → outputs `blog/post.html`
+
+### Wildcard Templates (Multiple Pages)
+
+**Examples:**
+
+- `product.template.html` + `"product*"` key → outputs `product.laptop.html`, `product.phone.html`, etc.
+- `profile.template.html` + `"profile*"` key → outputs `profile.john.html`, `profile.jane.html`, etc.
+- `article.template.html` + `"article*"` key → outputs `article.intro.html`, `article.tutorial.html`, etc.
+
+The wildcard pattern uses the **asterisk (`*`)** at the end of the JSON key to indicate multiple page generation.
 
 ## Requirements
 
