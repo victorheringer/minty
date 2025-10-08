@@ -11,6 +11,7 @@ Minty is a simple yet powerful tool that generates static HTML websites from Han
 - 🎨 Uses Handlebars.js for flexible templating
 - 📦 Simple JSON-based content management
 - ⭐ **Wildcard pattern** for generating multiple pages from one template
+- 🧩 **Partial templates** for reusable components
 - 🗂️ Maintains folder structure in output
 - 🔄 Automatic static file copying
 - 🚀 Fast and lightweight
@@ -145,6 +146,94 @@ This feature is perfect for:
 - Team member profiles
 - Portfolio items
 - Any scenario where you need many similar pages
+
+## Partial Templates
+
+Minty supports **partial templates** for reusable components. This allows you to break your templates into smaller, manageable pieces that can be shared across multiple pages.
+
+### Creating Partials
+
+**Partial files** must follow the naming convention: `{name}.partial.html`
+
+**Example:** `header.partial.html`
+
+```html
+<header>
+  <h1>{{brand}}</h1>
+  <nav>
+    {{#each navLinks}}
+    <li><a href="{{url}}">{{label}}</a></li>
+    {{/each}}
+  </nav>
+</header>
+```
+
+### Using Partials in Templates
+
+Include partials in your templates using either format:
+
+- **With comment:** `<!-- @header.partial.html -->`
+- **Direct import:** `@header.partial.html`
+
+**Example:** `index.template.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{title}} - {{siteTitle}}</title>
+  </head>
+  <body>
+    <!-- @header.partial.html -->
+
+    <main>
+      <h2>{{heading}}</h2>
+      <p>{{content}}</p>
+    </main>
+
+    @footer.partial.html
+  </body>
+</html>
+```
+
+### Partial Data in JSON
+
+Partial data uses the **underscore suffix** (`_`) in JSON keys:
+
+```json
+{
+  "common": {
+    "siteTitle": "My Site",
+    "navLinks": [
+      { "url": "/", "label": "Home" },
+      { "url": "/about.html", "label": "About" }
+    ]
+  },
+  "header_": {
+    "brand": "My Brand Logo"
+  },
+  "footer_": {
+    "copyrightYear": "2025",
+    "company": "My Company"
+  },
+  "index": {
+    "title": "Welcome",
+    "heading": "Welcome to my site",
+    "content": "This is the homepage."
+  }
+}
+```
+
+### Data Merging Priority
+
+For each partial, data is merged in this order (highest priority last):
+
+1. **Common data** (`common`)
+2. **Partial-specific data** (`header_`, `footer_`, etc.)
+3. **Page-specific data** (`index`, `about`, etc.)
+
+This means page data can override partial data, and partial data can override common data.
 
 ## Template Syntax
 

@@ -12,6 +12,9 @@ This file demonstrates how to set up and use Minty in a parent project.
 ├─ /site
 │   ├─ index.template.html
 │   ├─ about.template.html
+│   ├─ product.template.html
+│   ├─ header.partial.html
+│   ├─ footer.partial.html
 │   └─ /assets
 │       └─ style.css
 └─ /dist (generated)
@@ -37,8 +40,17 @@ In the parent directory (`/my-website`), create `data.json`:
 {
   "common": {
     "siteTitle": "My Awesome Site",
-    "footerText": "© 2025 Victor Heringer",
-    "year": "2025"
+    "year": "2025",
+    "navLinks": [
+      { "url": "/", "label": "Home" },
+      { "url": "/about.html", "label": "About" }
+    ]
+  },
+  "header_": {
+    "brand": "My Brand Logo"
+  },
+  "footer_": {
+    "footerText": "© 2025 Victor Heringer"
   },
   "index": {
     "title": "Welcome",
@@ -67,9 +79,35 @@ In the parent directory (`/my-website`), create `data.json`:
 }
 ```
 
-**Note:** The `product*` key with asterisk will generate multiple pages from a single template!
+**Features shown:**
+
+- `common` data shared across all pages
+- `header_` and `footer_` data for partials (note the underscore)
+- `product*` wildcard pattern for multiple product pages
 
 ## Step 3: Create Templates
+
+### site/header.partial.html
+
+```html
+<header>
+  <h1>{{brand}}</h1>
+  <nav>
+    {{#each navLinks}}
+    <a href="{{url}}">{{label}}</a>
+    {{/each}}
+  </nav>
+</header>
+```
+
+### site/footer.partial.html
+
+```html
+<footer>
+  <p>{{footerText}}</p>
+  <p>Year: {{year}}</p>
+</footer>
+```
 
 ### site/index.template.html
 
@@ -82,9 +120,14 @@ In the parent directory (`/my-website`), create `data.json`:
     <link rel="stylesheet" href="/assets/style.css" />
   </head>
   <body>
-    <h1>{{heading}}</h1>
-    <p>{{content}}</p>
-    <footer>{{footerText}}</footer>
+    <!-- @header.partial.html -->
+
+    <main>
+      <h1>{{heading}}</h1>
+      <p>{{content}}</p>
+    </main>
+
+    @footer.partial.html
   </body>
 </html>
 ```
@@ -100,9 +143,14 @@ In the parent directory (`/my-website`), create `data.json`:
     <link rel="stylesheet" href="/assets/style.css" />
   </head>
   <body>
-    <h1>{{heading}}</h1>
-    <p>{{content}}</p>
-    <footer>{{footerText}}</footer>
+    <!-- @header.partial.html -->
+
+    <main>
+      <h1>{{heading}}</h1>
+      <p>{{content}}</p>
+    </main>
+
+    <!-- @footer.partial.html -->
   </body>
 </html>
 ```
@@ -160,23 +208,31 @@ yarn minty build
 
 The `dist` folder will contain:
 
-- `index.html` (rendered from index.template.html)
-- `about.html` (rendered from about.template.html)
+- `index.html` (with header and footer partials included)
+- `about.html` (with header and footer partials included)
 - `product.laptop.html` (generated from product.template.html with laptop data)
 - `product.phone.html` (generated from product.template.html with phone data)
 - `assets/style.css` (copied as-is)
 
-## Wildcard Pattern Explained
+## Features Demonstrated
 
-When you use the wildcard pattern (`product*`), Minty:
+### 1. Partial Templates
 
-1. Detects the asterisk in the JSON key
-2. Finds the matching template (`product.template.html`)
-3. Loops through each sub-key (`laptop`, `phone`)
-4. Generates a separate HTML file for each: `product.{subkey}.html`
-5. Each page gets its own data merged with `common` data
+- `header.partial.html` and `footer.partial.html` are reusable components
+- Imported using `<!-- @filename.partial.html -->` or `@filename.partial.html`
+- Each partial can have its own data (`header_`, `footer_`)
 
-This is perfect for creating multiple similar pages without duplicating templates!
+### 2. Data Merging
+
+- `common` data is available to all templates and partials
+- `header_` data is merged when rendering the header partial
+- `footer_` data is merged when rendering the footer partial
+- Page data (`index`, `about`) takes priority over partial and common data
+
+### 3. Wildcard Pattern
+
+- `product*` generates multiple product pages from one template
+- Each sub-key becomes a separate HTML file
 
 ## Commands
 

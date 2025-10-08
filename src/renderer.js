@@ -1,10 +1,12 @@
 /**
  * Template rendering engine for Minty
- * Uses Handlebars to render templates with data
+ * Uses Handlebars to render templates with data and partial support
  */
 
 import { readFileSync } from "fs";
 import Handlebars from "handlebars";
+import { processPartials } from "./partials.js";
+import { dirname } from "path";
 
 /**
  * Checks if a template should use wildcard generation (multiple pages)
@@ -32,11 +34,19 @@ export function checkWildcard(keyName, data) {
  * @param {string} keyName - The key name to look up in the data object
  * @param {Object} data - Full data object containing common and page-specific data
  * @param {string} subKey - Optional sub-key for wildcard templates
+ * @param {string} rootDir - Root directory for finding partials
  * @returns {Object} Result object with success status, html, or error message
  */
-export function renderTemplate(templatePath, keyName, data, subKey = null) {
+export function renderTemplate(
+  templatePath,
+  keyName,
+  data,
+  subKey = null,
+  rootDir = null
+) {
   try {
     let pageData;
+    let pageKey;
 
     // If subKey is provided, this is a wildcard render
     if (subKey) {
@@ -48,6 +58,7 @@ export function renderTemplate(templatePath, keyName, data, subKey = null) {
         };
       }
       pageData = data[wildcardKey][subKey];
+      pageKey = keyName; // Use base key for partial data lookup
     } else {
       // Regular single-page render
       if (!data[keyName]) {
@@ -57,10 +68,21 @@ export function renderTemplate(templatePath, keyName, data, subKey = null) {
         };
       }
       pageData = data[keyName];
+      pageKey = keyName;
     }
 
     // Read the template file
-    const templateContent = readFileSync(templatePath, "utf-8");
+    let templateContent = readFileSync(templatePath, "utf-8");
+
+    // Process partials if rootDir is provided
+    if (rootDir) {
+      templateContent = processPartials(
+        templateContent,
+        rootDir,
+        data,
+        pageKey
+      );
+    }
 
     // Compile the template with Handlebars
     const template = Handlebars.compile(templateContent);

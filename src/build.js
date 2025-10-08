@@ -71,7 +71,8 @@ export function build() {
             template.fullPath,
             template.keyName,
             data,
-            subKey
+            subKey,
+            config.rootDir
           );
 
           if (result.success) {
@@ -91,7 +92,9 @@ export function build() {
         const result = renderTemplate(
           template.fullPath,
           template.keyName,
-          data
+          data,
+          null,
+          config.rootDir
         );
 
         if (result.success) {
