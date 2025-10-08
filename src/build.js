@@ -44,8 +44,12 @@ export function build() {
 
     // Step 5: Find all templates
     console.log("🔍 Finding templates...");
-    const templates = findTemplates(config.rootDir);
-    console.log(`✓ Found ${templates.length} template(s)\n`);
+    const templates = findTemplates(config.rootDir, config.extensions);
+    console.log(
+      `✓ Found ${
+        templates.length
+      } template(s) for extensions: ${config.extensions.join(", ")}\n`
+    );
 
     // Step 6: Render templates
     console.log("🎨 Rendering templates...");
@@ -72,12 +76,13 @@ export function build() {
             template.keyName,
             data,
             subKey,
-            config.rootDir
+            config.rootDir,
+            config.extensions
           );
 
           if (result.success) {
-            // Generate filename: page.casa1.html, page.casa2.html, etc.
-            const outputFileName = `${template.keyName}.${subKey}.html`;
+            // Generate filename: page.casa1.css, page.casa2.json, etc.
+            const outputFileName = `${template.keyName}.${subKey}.${template.extension}`;
             const outputPath = join(template.outputDir, outputFileName);
             writeRenderedFile(config.distDir, outputPath, result.html);
             successCount++;
@@ -94,7 +99,8 @@ export function build() {
           template.keyName,
           data,
           null,
-          config.rootDir
+          config.rootDir,
+          config.extensions
         );
 
         if (result.success) {

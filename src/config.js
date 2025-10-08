@@ -12,7 +12,7 @@ const __dirname = dirname(__filename);
 
 /**
  * Loads and validates the .mintyrc configuration file
- * @returns {Object} Configuration object with jsonPath, rootDir, and distDir
+ * @returns {Object} Configuration object with jsonPath, rootDir, distDir, and extensions
  * @throws {Error} If configuration file is missing or invalid
  */
 export function loadConfig() {
@@ -43,11 +43,34 @@ export function loadConfig() {
       throw new Error(".mintyrc missing required field: distDir");
     }
 
+    // Parse extensions (default to 'html' if not provided)
+    let extensions = ["html"]; // Default extensions
+    if (config.extensions) {
+      if (typeof config.extensions === "string") {
+        extensions = config.extensions
+          .split(",")
+          .map((ext) => ext.trim())
+          .filter((ext) => ext.length > 0);
+      } else {
+        throw new Error(
+          ".mintyrc field 'extensions' must be a comma-separated string (e.g., 'html,css,txt')"
+        );
+      }
+    }
+
+    // Validate extensions
+    if (extensions.length === 0) {
+      throw new Error(
+        ".mintyrc field 'extensions' cannot be empty. Use at least one extension like 'html'"
+      );
+    }
+
     // Resolve paths relative to the parent directory
     return {
       jsonPath: resolve(parentDir, config.jsonPath),
       rootDir: resolve(parentDir, config.rootDir),
       distDir: resolve(parentDir, config.distDir),
+      extensions: extensions,
     };
   } catch (error) {
     if (error instanceof SyntaxError) {

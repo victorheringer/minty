@@ -35,15 +35,34 @@ Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 {
   "jsonPath": "data.json",
   "rootDir": "site",
-  "distDir": "dist"
+  "distDir": "dist",
+  "extensions": "html,css,txt,json"
 }
 ```
 
 ### Configuration Fields
 
 - **jsonPath**: Path to the JSON file containing your page data (relative to the parent directory)
-- **rootDir**: Directory containing your `.template.html` files and static assets (relative to the parent directory)
+- **rootDir**: Directory containing your template files and static assets (relative to the parent directory)
 - **distDir**: Output directory for generated files (relative to the parent directory)
+- **extensions** _(optional)_: Comma-separated list of file extensions to process (default: `"html"`)
+
+### Supported File Types
+
+Minty can process **any file type** as templates! Simply specify the extensions you want to use:
+
+- **HTML**: `"html"` for web pages
+- **CSS**: `"css"` for dynamic stylesheets with variables
+- **Text**: `"txt,md"` for documentation and text files
+- **Data**: `"json,xml,yaml"` for configuration files
+- **Mixed**: `"html,css,js,json"` for complete projects
+
+**Examples:**
+
+- `style.template.css` → `style.css`
+- `config.template.json` → `config.json`
+- `README.template.md` → `README.md`
+- `script.template.js` → `script.js`
 
 ## Project Structure
 
@@ -55,6 +74,10 @@ Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 ├─ /site              ← Your source files
 │   ├─ index.template.html
 │   ├─ about.template.html
+│   ├─ style.template.css
+│   ├─ config.template.json
+│   ├─ header.partial.html
+│   ├─ vars.partial.css
 │   ├─ /assets
 │   │   ├─ style.css
 │   │   └─ script.js
@@ -62,6 +85,8 @@ Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 └─ /dist              ← Generated output (created automatically)
     ├─ index.html
     ├─ about.html
+    ├─ style.css
+    ├─ config.json
     ├─ /assets
     └─ /images
 ```
@@ -283,6 +308,53 @@ Minty supports all standard Handlebars helpers:
 - **`{{#unless condition}}`** - Negative conditional
 - **`{{{raw}}}`** - Unescaped HTML output
 
+### Multi-Extension Examples
+
+**Dynamic CSS** (`style.template.css`):
+
+```css
+:root {
+  --primary-color: {{primaryColor}};
+  --font-size: {{baseFontSize}};
+}
+
+body {
+  font-family: {{fontFamily}};
+  color: var(--primary-color);
+}
+```
+
+**Configuration File** (`config.template.json`):
+
+```json
+{
+  "appName": "{{appName}}",
+  "version": "{{version}}",
+  "apiUrl": "{{apiUrl}}",
+  "features": {
+    {{#each features}}
+    "{{name}}": {{enabled}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  }
+}
+```
+
+**Documentation** (`README.template.md`):
+
+```markdown
+# {{projectName}}
+
+Version: {{version}}
+
+## Description
+
+{{description}}
+
+## Installation
+
+{{installInstructions}}
+```
+
 ## Usage
 
 ### Build Your Site
@@ -315,23 +387,26 @@ yarn build
 1. ✅ Loads configuration from `.mintyrc`
 2. ✅ Loads data from your JSON file
 3. ✅ Clears the dist directory
-4. ✅ Copies all static files (CSS, JS, images, etc.)
-5. ✅ Renders each `.template.html` file with its corresponding data
-6. ✅ Generates final `.html` files in the dist directory
+4. ✅ Copies all static files (images, fonts, etc.)
+5. ✅ Renders each template file (`.template.{ext}`) with its corresponding data
+6. ✅ Processes partial includes for all file types
+7. ✅ Generates final files with configured extensions in the dist directory
 
 ## Error Handling
 
 Minty provides clear error messages:
 
-- **Missing template data**: If a `.template.html` file has no corresponding key in the JSON, it will be skipped with an error message
+- **Missing template data**: If a template file has no corresponding key in the JSON, it will be skipped with an error message
 - **Missing configuration**: If `.mintyrc` is not found, the build stops with instructions
 - **Invalid JSON**: Syntax errors in JSON files are caught and reported
 - **Missing common data**: If the `common` key is missing from the JSON, the build fails
+- **Invalid extensions**: If extensions field is invalid, configuration loading fails
 
 ## Template Naming Convention
 
-- Template files **must** end with `.template.html`
-- The key in JSON must match the template filename (without `.template.html`)
+- Template files **must** follow the pattern: `{name}.template.{extension}`
+- The key in JSON must match the template filename (without `.template.{extension}`)
+- Partial files **must** follow the pattern: `{name}.partial.{extension}`
 - Output files will have `.template` removed
 
 ### Single Page Templates
@@ -340,7 +415,9 @@ Minty provides clear error messages:
 
 - `index.template.html` → requires `"index"` key → outputs `index.html`
 - `about.template.html` → requires `"about"` key → outputs `about.html`
-- `blog/post.template.html` → requires `"post"` key → outputs `blog/post.html`
+- `style.template.css` → requires `"style"` key → outputs `style.css`
+- `config.template.json` → requires `"config"` key → outputs `config.json`
+- `blog/post.template.md` → requires `"post"` key → outputs `blog/post.md`
 
 ### Wildcard Templates (Multiple Pages)
 
@@ -348,7 +425,17 @@ Minty provides clear error messages:
 
 - `product.template.html` + `"product*"` key → outputs `product.laptop.html`, `product.phone.html`, etc.
 - `profile.template.html` + `"profile*"` key → outputs `profile.john.html`, `profile.jane.html`, etc.
-- `article.template.html` + `"article*"` key → outputs `article.intro.html`, `article.tutorial.html`, etc.
+- `theme.template.css` + `"theme*"` key → outputs `theme.dark.css`, `theme.light.css`, etc.
+- `config.template.json` + `"config*"` key → outputs `config.dev.json`, `config.prod.json`, etc.
+
+### Partial Templates
+
+**Examples:**
+
+- `header.partial.html` → included via `@header.partial.html`
+- `footer.partial.html` → included via `@footer.partial.html`
+- `vars.partial.css` → included via `@vars.partial.css`
+- `common.partial.json` → included via `@common.partial.json`
 
 The wildcard pattern uses the **asterisk (`*`)** at the end of the JSON key to indicate multiple page generation.
 

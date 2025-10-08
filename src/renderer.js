@@ -35,6 +35,7 @@ export function checkWildcard(keyName, data) {
  * @param {Object} data - Full data object containing common and page-specific data
  * @param {string} subKey - Optional sub-key for wildcard templates
  * @param {string} rootDir - Root directory for finding partials
+ * @param {Array<string>} extensions - Array of file extensions for partials
  * @returns {Object} Result object with success status, html, or error message
  */
 export function renderTemplate(
@@ -42,7 +43,8 @@ export function renderTemplate(
   keyName,
   data,
   subKey = null,
-  rootDir = null
+  rootDir = null,
+  extensions = ["html"]
 ) {
   try {
     let pageData;
@@ -79,6 +81,7 @@ export function renderTemplate(
       templateContent = processPartials(
         templateContent,
         rootDir,
+        extensions,
         data,
         pageKey
       );
