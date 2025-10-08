@@ -1,21 +1,22 @@
 # Minty 🌿
 
-A lightweight, modular static site generator built with Node.js and Handlebars.js.
+A lightweight, modular universal template engine built with Node.js and Handlebars.js.
 
 ## Overview
 
-Minty is a simple yet powerful tool that generates static HTML websites from Handlebars templates and JSON data. It's designed to be used as a Git submodule, making it easy to integrate into any web project.
+Minty is a simple yet powerful tool that generates static files from Handlebars templates and JSON data. It can process any file type - HTML, CSS, JSON, Markdown, configuration files, and more. It's designed to be used as a Git submodule, making it easy to integrate into any project.
 
 **Key Features:**
 
 - 🎨 Uses Handlebars.js for flexible templating
 - 📦 Simple JSON-based content management
-- ⭐ **Wildcard pattern** for generating multiple pages from one template
+- 🌐 **Universal file support** - HTML, CSS, JSON, Markdown, and any extension
+- ⭐ **Wildcard pattern** for generating multiple files from one template
 - 🧩 **Partial templates** for reusable components
 - 🗂️ Maintains folder structure in output
 - 🔄 Automatic static file copying
 - 🚀 Fast and lightweight
-- 📝 Shared data across all pages
+- 📝 Shared data across all templates
 
 ## Installation
 
@@ -42,7 +43,7 @@ Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 
 ### Configuration Fields
 
-- **jsonPath**: Path to the JSON file containing your page data (relative to the parent directory)
+- **jsonPath**: Path to the JSON file containing your template data (relative to the parent directory)
 - **rootDir**: Directory containing your template files and static assets (relative to the parent directory)
 - **distDir**: Output directory for generated files (relative to the parent directory)
 - **extensions** _(optional)_: Comma-separated list of file extensions to process (default: `"html"`)
@@ -51,8 +52,9 @@ Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 
 Minty can process **any file type** as templates! Simply specify the extensions you want to use:
 
-- **HTML**: `"html"` for web pages
+- **HTML**: `"html"` for web pages and websites
 - **CSS**: `"css"` for dynamic stylesheets with variables
+- **JavaScript**: `"js"` for dynamic scripts and configurations
 - **Text**: `"txt,md"` for documentation and text files
 - **Data**: `"json,xml,yaml"` for configuration files
 - **Mixed**: `"html,css,js,json"` for complete projects
@@ -95,30 +97,27 @@ Minty can process **any file type** as templates! Simply specify the extensions 
 
 Your JSON file should contain:
 
-1. A **`common`** key with data shared across all pages
+1. A **`common`** key with data shared across all templates
 2. Individual keys for each template file
-3. **Optional**: Wildcard keys (ending with `*`) for generating multiple pages from a single template
+3. **Optional**: Wildcard keys (ending with `*`) for generating multiple files from a single template
 
 ### Example `data.json`
 
 ```json
 {
   "common": {
-    "siteTitle": "My Awesome Site",
-    "footerText": "© 2025 Victor Heringer",
-    "navLinks": [
-      { "url": "/", "label": "Home" },
-      { "url": "/about.html", "label": "About" }
-    ]
+    "projectTitle": "My Awesome Project",
+    "version": "1.0.0",
+    "author": "Victor Heringer"
   },
   "index": {
     "title": "Welcome Home",
-    "heading": "Welcome to my site",
+    "heading": "Welcome to my project",
     "content": "This is the homepage content."
   },
   "about": {
     "title": "About Us",
-    "heading": "About Our Company",
+    "heading": "About Our Project",
     "content": "We build amazing things."
   }
 }
@@ -133,7 +132,7 @@ You can generate **multiple pages from a single template** using the wildcard pa
 ```json
 {
   "common": {
-    "siteTitle": "My Store",
+    "projectTitle": "My Store",
     "footerText": "© 2025 My Store"
   },
   "product*": {
@@ -166,21 +165,26 @@ You can generate **multiple pages from a single template** using the wildcard pa
 
 This feature is perfect for:
 
-- Product catalogs
-- Blog posts
+- Product catalogs and e-commerce
+- Documentation systems
+- Configuration files for different environments
+- Multi-language content
+- Blog posts and articles
 - Team member profiles
 - Portfolio items
-- Any scenario where you need many similar pages
+- Any scenario where you need many similar files
 
 ## Partial Templates
 
-Minty supports **partial templates** for reusable components. This allows you to break your templates into smaller, manageable pieces that can be shared across multiple pages.
+Minty supports **partial templates** for reusable components. This allows you to break your templates into smaller, manageable pieces that can be shared across multiple templates of any file type.
 
 ### Creating Partials
 
-**Partial files** must follow the naming convention: `{name}.partial.html`
+**Partial files** must follow the naming convention: `{name}.partial.{extension}`
 
-**Example:** `header.partial.html`
+**Examples:**
+
+`header.partial.html`
 
 ```html
 <header>
@@ -193,6 +197,16 @@ Minty supports **partial templates** for reusable components. This allows you to
 </header>
 ```
 
+`vars.partial.css`
+
+```css
+:root {
+  --primary: {{primaryColor}};
+  --secondary: {{secondaryColor}};
+  --font-family: {{fontFamily}};
+}
+```
+
 ### Using Partials in Templates
 
 Include partials in your templates using either format:
@@ -200,14 +214,19 @@ Include partials in your templates using either format:
 - **With comment:** `<!-- @header.partial.html -->`
 - **Direct import:** `@header.partial.html`
 
-**Example:** `index.template.html`
+**Examples:**
+
+`index.template.html`
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>{{title}} - {{siteTitle}}</title>
+    <title>{{title}} - {{projectTitle}}</title>
+    <style>
+      @vars.partial.css;
+    </style>
   </head>
   <body>
     <!-- @header.partial.html -->
@@ -222,6 +241,15 @@ Include partials in your templates using either format:
 </html>
 ```
 
+`style.template.css`
+
+```css
+@vars.partial.css body {
+  font-family: var(--font-family);
+  color: var(--primary);
+}
+```
+
 ### Partial Data in JSON
 
 Partial data uses the **underscore suffix** (`_`) in JSON keys:
@@ -229,7 +257,7 @@ Partial data uses the **underscore suffix** (`_`) in JSON keys:
 ```json
 {
   "common": {
-    "siteTitle": "My Site",
+    "projectTitle": "My Project",
     "navLinks": [
       { "url": "/", "label": "Home" },
       { "url": "/about.html", "label": "About" }
@@ -242,9 +270,14 @@ Partial data uses the **underscore suffix** (`_`) in JSON keys:
     "copyrightYear": "2025",
     "company": "My Company"
   },
+  "vars_": {
+    "primaryColor": "#007acc",
+    "secondaryColor": "#333",
+    "fontFamily": "Arial, sans-serif"
+  },
   "index": {
     "title": "Welcome",
-    "heading": "Welcome to my site",
+    "heading": "Welcome to my project",
     "content": "This is the homepage."
   }
 }
@@ -255,14 +288,14 @@ Partial data uses the **underscore suffix** (`_`) in JSON keys:
 For each partial, data is merged in this order (highest priority last):
 
 1. **Common data** (`common`)
-2. **Partial-specific data** (`header_`, `footer_`, etc.)
-3. **Page-specific data** (`index`, `about`, etc.)
+2. **Partial-specific data** (`header_`, `footer_`, `vars_`, etc.)
+3. **Template-specific data** (`index`, `about`, etc.)
 
-This means page data can override partial data, and partial data can override common data.
+This means template data can override partial data, and partial data can override common data.
 
 ## Template Syntax
 
-Templates use standard Handlebars.js syntax. Data from `common` is merged with page-specific data (page data takes precedence).
+Templates use standard Handlebars.js syntax. Data from `common` is merged with template-specific data (template data takes precedence).
 
 ### Example `index.template.html`
 
@@ -357,7 +390,7 @@ Version: {{version}}
 
 ## Usage
 
-### Build Your Site
+### Build Your Project
 
 From the parent directory of the Minty folder:
 
