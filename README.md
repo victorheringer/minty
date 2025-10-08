@@ -415,6 +415,59 @@ Then run:
 yarn build
 ```
 
+## AI Context System 🤖
+
+Minty includes an AI-optimized context system that creates a comprehensive project representation for better AI assistant collaboration. This system automatically analyzes your project structure, patterns, and dependencies to provide AI assistants with rich context for more accurate code assistance.
+
+### Automatic Updates
+
+The AI context is automatically updated every time you run a build:
+
+```bash
+yarn minty build
+```
+
+This updates `.minty-ai-context.json` with:
+
+- Current project architecture
+- Build statistics and performance metrics
+- Template patterns and data relationships
+- Extension configurations and file mappings
+- Recent changes and timestamps
+
+### Manual Generation
+
+You can also generate the AI context manually:
+
+```bash
+yarn minty ai-context
+```
+
+Or add it to your parent project's scripts:
+
+```json
+{
+  "scripts": {
+    "build": "cd minty && yarn minty build",
+    "ai-context": "cd minty && yarn minty ai-context"
+  }
+}
+```
+
+### AI Context Benefits
+
+- 🎯 **Faster AI Understanding**: Provides structured project overview instead of requiring file-by-file analysis
+- 🔄 **Real-time Updates**: Context stays synchronized with your project changes
+- 📊 **Build Analytics**: Tracks performance and generation patterns over time
+- 🧠 **Pattern Recognition**: Maps relationships between templates, data, and outputs
+- 🎨 **Architecture Clarity**: Clear separation of concerns and data flow documentation
+
+The AI context file (`.minty-ai-context.json`) should be committed to version control to maintain consistency across development environments and team collaboration.
+
+## Usage
+
+```
+
 ### What Happens During Build
 
 1. ✅ Loads configuration from `.mintyrc`
@@ -484,3 +537,4 @@ MIT
 ---
 
 Built with 🌿 by Victor Heringer
+```

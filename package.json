@@ -8,7 +8,8 @@
     "minty": "./bin/minty.js"
   },
   "scripts": {
-    "minty": "node bin/minty.js"
+    "minty": "node bin/minty.js",
+    "ai-context": "node -e \"import('./src/ai-context.js').then(m => m.generateAIContext())\""
   },
   "repository": "git@github.com:victorheringer/minty.git",
   "author": "Victor Heringer <victorhugo.heringer@hotmail.com>",
