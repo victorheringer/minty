@@ -8,14 +8,17 @@ import { loadData } from "./data.js";
 import { findTemplates } from "./templates.js";
 import { renderTemplate } from "./renderer.js";
 import { clearDist, copyStaticFiles, writeRenderedFile } from "./files.js";
+import { updateAIContext } from "./ai-context.js";
 import { join } from "path";
 
 /**
  * Executes the complete build process
  * @returns {Object} Build result with success status and statistics
  */
-export function build() {
+export async function build() {
   console.log("\n🌿 Minty - Static Site Generator\n");
+
+  const startTime = Date.now();
 
   try {
     // Step 1: Load configuration
@@ -55,6 +58,7 @@ export function build() {
     console.log("🎨 Rendering templates...");
     let successCount = 0;
     let errorCount = 0;
+    let wildcardGeneratedCount = 0;
     const errors = [];
 
     for (const template of templates) {
@@ -86,6 +90,7 @@ export function build() {
             const outputPath = join(template.outputDir, outputFileName);
             writeRenderedFile(config.distDir, outputPath, result.html);
             successCount++;
+            wildcardGeneratedCount++;
           } else {
             console.error(`  ✗ ${result.error}`);
             errors.push(result.error);
@@ -119,17 +124,44 @@ export function build() {
 
     console.log("");
 
-    // Step 7: Summary
+    const buildTime = Date.now() - startTime;
+
+    // Step 7: Update AI Context with build statistics
+    console.log("🤖 Updating AI context...");
+    await updateAIContext({
+      lastBuild: new Date().toISOString(),
+      buildTimeMs: buildTime,
+      templatesProcessed: templates.length,
+      filesGenerated: successCount,
+      wildcardFilesGenerated: wildcardGeneratedCount,
+      errorCount: errorCount,
+      dataKeys: pageKeys.length,
+      extensions: config.extensions,
+    });
+    console.log("✓ AI context updated\n");
+
+    // Step 8: Summary
     console.log("📊 Build Summary:");
-    console.log(`  - Templates rendered: ${successCount}`);
+    console.log(`  - Templates processed: ${templates.length}`);
+    console.log(`  - Files generated: ${successCount}`);
+    if (wildcardGeneratedCount > 0) {
+      console.log(`  - Wildcard files: ${wildcardGeneratedCount}`);
+    }
     if (errorCount > 0) {
       console.log(`  - Templates skipped: ${errorCount}`);
     }
+    console.log(`  - Build time: ${buildTime}ms`);
     console.log("");
 
     if (errorCount === 0) {
       console.log("✅ Build completed successfully!\n");
-      return { success: true, rendered: successCount, skipped: errorCount };
+      return {
+        success: true,
+        rendered: successCount,
+        skipped: errorCount,
+        buildTimeMs: buildTime,
+        wildcardGenerated: wildcardGeneratedCount,
+      };
     } else {
       console.log("⚠️  Build completed with errors.\n");
       return {
@@ -137,6 +169,8 @@ export function build() {
         rendered: successCount,
         skipped: errorCount,
         errors,
+        buildTimeMs: buildTime,
+        wildcardGenerated: wildcardGeneratedCount,
       };
     }
   } catch (error) {

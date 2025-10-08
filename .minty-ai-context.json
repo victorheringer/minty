@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "project": "minty",
+    "type": "universal-template-engine",
+    "description": "Lightweight, modular template engine that processes any file type using Handlebars.js and JSON data",
+    "version": "1.0.0",
+    "lastUpdate": "2025-10-08T22:24:20.317Z",
+    "aiContextVersion": "1.0.0"
+  },
+  "architecture": {
+    "core": {
+      "config": {
+        "file": "src/config.js",
+        "purpose": "Load and validate .mintyrc configuration file from parent directory",
+        "dependencies": [],
+        "inputs": [".mintyrc"],
+        "outputs": ["config-object"],
+        "key-functions": ["loadConfig"],
+        "configuration-fields": ["jsonPath", "rootDir", "distDir", "extensions"]
+      },
+      "data": {
+        "file": "src/data.js",
+        "purpose": "Load and validate JSON data file containing template content",
+        "dependencies": ["config"],
+        "inputs": ["data.json"],
+        "outputs": ["data-object"],
+        "key-functions": ["loadData"],
+        "validates": ["common-key-exists", "json-syntax"]
+      },
+      "templates": {
+        "file": "src/templates.js",
+        "purpose": "Discover template and partial files with configured extensions",
+        "dependencies": ["config"],
+        "inputs": ["template-files", "partial-files"],
+        "outputs": ["template-list", "partial-list"],
+        "key-functions": ["findTemplates", "findPartials"],
+        "patterns": ["*.template.{ext}", "*.partial.{ext}"]
+      },
+      "renderer": {
+        "file": "src/renderer.js",
+        "purpose": "Compile Handlebars templates and merge with data",
+        "dependencies": ["templates", "data", "partials"],
+        "inputs": ["template-content", "merged-data"],
+        "outputs": ["rendered-content"],
+        "key-functions": ["renderTemplate", "checkWildcard"],
+        "template-engine": "handlebars"
+      },
+      "partials": {
+        "file": "src/partials.js",
+        "purpose": "Process and substitute partial template includes",
+        "dependencies": ["templates"],
+        "inputs": ["template-with-partials", "partial-files"],
+        "outputs": ["processed-template"],
+        "key-functions": [
+          "processPartials",
+          "renderPartial",
+          "createPartialMap"
+        ],
+        "import-patterns": [
+          "@filename.partial.ext",
+          "<!-- @filename.partial.ext -->"
+        ]
+      },
+      "files": {
+        "file": "src/files.js",
+        "purpose": "Handle file operations - clear, copy, write",
+        "dependencies": ["config"],
+        "inputs": ["source-files"],
+        "outputs": ["dist-files"],
+        "key-functions": ["clearDist", "copyStaticFiles", "writeRenderedFile"],
+        "operations": ["clear-dist", "copy-static", "write-rendered"]
+      },
+      "build": {
+        "file": "src/build.js",
+        "purpose": "Orchestrate the complete build process",
+        "dependencies": [
+          "config",
+          "data",
+          "templates",
+          "renderer",
+          "partials",
+          "files"
+        ],
+        "inputs": ["all-source-files"],
+        "outputs": ["complete-dist"],
+        "key-functions": ["build"],
+        "process-steps": [
+          "load-config",
+          "load-data",
+          "clear-dist",
+          "copy-static",
+          "find-templates",
+          "render-templates"
+        ]
+      }
+    },
+    "cli": {
+      "file": "bin/minty.js",
+      "purpose": "Command-line interface entry point",
+      "commands": ["build", "help"],
+      "dependencies": ["build"],
+      "entry-point": true
+    },
+    "main": {
+      "file": "src/index.js",
+      "purpose": "Main module exports for programmatic use",
+      "exports": [
+        "build",
+        "loadConfig",
+        "loadData",
+        "findTemplates",
+        "renderTemplate"
+      ]
+    }
+  },
+  "patterns": {
+    "wildcards": {
+      "description": "Generate multiple files from single template using asterisk pattern",
+      "trigger": "JSON key ends with asterisk (*)",
+      "behavior": "Loop through sub-keys and generate separate files",
+      "example": {
+        "json": "product*: { laptop: {...}, phone: {...} }",
+        "template": "product.template.html",
+        "output": ["product.laptop.html", "product.phone.html"]
+      },
+      "filename-pattern": "{templateName}.{subKey}.{extension}",
+      "data-merge": ["common", "subKey-data"],
+      "works-with": ["all-extensions", "partials"]
+    },
+    "partials": {
+      "description": "Include reusable template components",
+      "trigger": "@filename.partial.ext in template content",
+      "behavior": "Replace import with rendered partial content",
+      "import-formats": [
+        "@filename.partial.ext",
+        "<!-- @filename.partial.ext -->"
+      ],
+      "data-source": "filename_ key in JSON",
+      "data-merge": ["common", "partial_", "template-data"],
+      "priority": "template-data > partial-data > common-data",
+      "works-with": ["all-extensions", "wildcards"]
+    },
+    "extensions": {
+      "description": "Process any file type as templates",
+      "trigger": "extensions field in .mintyrc",
+      "behavior": "Discover and process *.template.{ext} files",
+      "default": ["html"],
+      "examples": ["html", "css", "json", "md", "txt", "js", "xml", "yaml"],
+      "template-pattern": "name.template.{ext}",
+      "partial-pattern": "name.partial.{ext}",
+      "output-pattern": "name.{ext}"
+    }
+  },
+  "data-flow": {
+    "configuration": {
+      "source": ".mintyrc in parent directory",
+      "fields": ["jsonPath", "rootDir", "distDir", "extensions"],
+      "validation": ["required-fields", "path-resolution", "extensions-format"]
+    },
+    "content": {
+      "source": "JSON file specified in jsonPath",
+      "structure": {
+        "common": "shared across all templates",
+        "templateName": "specific to single template",
+        "templateName*": "wildcard for multiple files",
+        "partialName_": "specific to partial template"
+      }
+    },
+    "processing": {
+      "discovery": "Find all .template.{ext} and .partial.{ext} files",
+      "validation": "Check data availability for each template",
+      "rendering": "Compile Handlebars with merged data",
+      "substitution": "Replace partial imports with rendered content",
+      "output": "Write final files to dist directory"
+    }
+  },
+  "extension-points": {
+    "new-file-types": {
+      "method": "Add extensions to .mintyrc",
+      "impact": "Automatic discovery and processing",
+      "files-affected": ["config.js", "templates.js", "partials.js"]
+    },
+    "new-template-engines": {
+      "method": "Replace Handlebars in renderer.js",
+      "impact": "Change template compilation logic",
+      "files-affected": ["renderer.js", "partials.js"]
+    },
+    "new-data-sources": {
+      "method": "Modify data.js loadData function",
+      "impact": "Support different data formats",
+      "files-affected": ["data.js", "build.js"]
+    },
+    "new-partial-patterns": {
+      "method": "Update regex in partials.js",
+      "impact": "Support different import syntaxes",
+      "files-affected": ["partials.js"]
+    },
+    "new-build-steps": {
+      "method": "Modify build.js process",
+      "impact": "Add pre/post processing",
+      "files-affected": ["build.js"]
+    }
+  },
+  "usage-patterns": {
+    "web-development": {
+      "extensions": ["html", "css", "js"],
+      "common-partials": ["header", "footer", "nav"],
+      "wildcards": ["pages", "components"]
+    },
+    "documentation": {
+      "extensions": ["md", "txt", "html"],
+      "common-partials": ["header", "footer", "toc"],
+      "wildcards": ["articles", "guides"]
+    },
+    "configuration": {
+      "extensions": ["json", "yaml", "xml"],
+      "common-partials": ["common-settings"],
+      "wildcards": ["environments", "services"]
+    },
+    "multi-language": {
+      "extensions": ["html", "json", "md"],
+      "wildcards": ["languages", "locales"],
+      "data-pattern": "lang* or locale*"
+    }
+  },
+  "performance": {
+    "bottlenecks": [
+      "file-discovery",
+      "handlebars-compilation",
+      "partial-processing"
+    ],
+    "optimizations": ["template-caching", "partial-map", "batch-processing"],
+    "scaling": ["parallel-rendering", "incremental-builds", "watch-mode"]
+  },
+  "ai-context": {
+    "purpose": "Optimized project representation for AI understanding and evolution",
+    "activation": ["file-presence", "explicit-request"],
+    "keywords": [
+      "consulte o contexto IA",
+      "use o mapa neural",
+      "verifique a arquitetura"
+    ],
+    "benefits": [
+      "rapid-understanding",
+      "dependency-mapping",
+      "pattern-recognition",
+      "extension-guidance"
+    ],
+    "updates": "automatic during builds and manual via CLI"
+  }
+}
