@@ -32,6 +32,8 @@ yarn install
 
 Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 
+**Local JSON file:**
+
 ```json
 {
   "jsonPath": "data.json",
@@ -41,9 +43,20 @@ Create a `.mintyrc` file in the **parent directory** of the Minty folder:
 }
 ```
 
+**Remote JSON URL:**
+
+```json
+{
+  "jsonPath": "https://api.example.com/content.json",
+  "rootDir": "site",
+  "distDir": "dist",
+  "extensions": "html,css,txt,json"
+}
+```
+
 ### Configuration Fields
 
-- **jsonPath**: Path to the JSON file containing your template data (relative to the parent directory)
+- **jsonPath**: Path to JSON file (relative to parent directory) **OR** HTTP/HTTPS URL to remote JSON
 - **rootDir**: Directory containing your template files and static assets (relative to the parent directory)
 - **distDir**: Output directory for generated files (relative to the parent directory)
 - **extensions** _(optional)_: Comma-separated list of file extensions to process (default: `"html"`)
@@ -94,6 +107,38 @@ Minty can process **any file type** as templates! Simply specify the extensions 
 ```
 
 ## Data Structure
+
+Minty automatically detects whether your `jsonPath` is a **local file** or a **remote URL** and handles both seamlessly.
+
+### Remote JSON Support 🌐
+
+You can host your JSON data remotely and Minty will fetch it automatically. Simply provide an HTTP/HTTPS URL in your `.mintyrc`:
+
+```json
+{
+  "jsonPath": "https://api.example.com/data.json",
+  "rootDir": "site",
+  "distDir": "dist",
+  "extensions": "html,css,json"
+}
+```
+
+**Examples of remote JSON sources:**
+
+- **GitHub Raw**: `https://raw.githubusercontent.com/user/repo/main/data.json`
+- **API Endpoint**: `https://api.mysite.com/content.json`
+- **CDN**: `https://cdn.jsdelivr.net/gh/user/repo@main/data.json`
+- **Cloud Storage**: `https://storage.googleapis.com/bucket/data.json`
+
+**Benefits of remote JSON:**
+
+- 🌐 **Content Management**: Update site content without touching the repository
+- 🔄 **Dynamic Updates**: Content changes reflect immediately on next build
+- 👥 **Team Collaboration**: Non-technical team members can update content via APIs
+- 🌍 **Multi-environment**: Different URLs for development, staging, and production
+- 📱 **Headless CMS**: Integrate with services like Strapi, Contentful, or custom APIs
+
+### Local vs Remote Data
 
 Your JSON file should contain:
 

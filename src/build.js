@@ -31,7 +31,7 @@ export async function build() {
 
     // Step 2: Load JSON data
     console.log("📦 Loading data...");
-    const data = loadData(config.jsonPath);
+    const data = await loadData(config.jsonPath);
     const pageKeys = Object.keys(data).filter((key) => key !== "common");
     console.log(`✓ Data loaded (${pageKeys.length} pages + common data)\n`);
 
