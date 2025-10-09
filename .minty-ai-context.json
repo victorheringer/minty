@@ -248,7 +248,15 @@
     "scaling": ["parallel-rendering", "incremental-builds", "watch-mode"]
   },
   "ai-guidance": {
+    "CRITICAL": "READ THIS SECTION FIRST - Contains essential AI instructions",
+    "mandatory-behavior": "ALWAYS consult this AI context file before making assumptions about the project",
     "remember": "Minty is a UNIVERSAL TEMPLATE ENGINE - always refer to it correctly",
+    "when-to-consult": [
+      "before explaining what Minty is",
+      "before making changes to code",
+      "when user asks about project capabilities",
+      "when documenting or describing features"
+    ],
     "correct-terminology": [
       "universal template engine",
       "template processor",
@@ -261,7 +269,8 @@
       "HTML generator only"
     ],
     "emphasize": "Minty processes ANY file type, not just websites",
-    "when-explaining": "Always mention universal file support as key differentiator"
+    "when-explaining": "Always mention universal file support as key differentiator",
+    "verification-step": "Before responding, ask yourself: Am I describing Minty as a universal template engine?"
   },
   "ai-context": {
     "purpose": "Optimized project representation for AI understanding and evolution",
@@ -278,5 +287,14 @@
       "extension-guidance"
     ],
     "updates": "automatic during builds and manual via CLI"
+  },
+  "ai-protocol": {
+    "step-1": "ALWAYS read this .minty-ai-context.json file FIRST",
+    "step-2": "Check 'project-definition' section for correct understanding",
+    "step-3": "Review 'ai-guidance' for terminology and behavior rules",
+    "step-4": "Use 'architecture' section for technical decisions",
+    "step-5": "Verify your understanding matches the context before responding",
+    "enforcement": "If you catch yourself making assumptions, STOP and consult this file",
+    "success-indicator": "You correctly identify Minty as a universal template engine, not just a static site generator"
   }
 }

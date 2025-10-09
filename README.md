@@ -2,6 +2,8 @@
 
 A lightweight, modular universal template engine built with Node.js and Handlebars.js.
 
+> **🤖 For AI Assistants**: Before working with this project, ALWAYS consult `.minty-ai-context.json` for accurate project understanding, terminology, and architectural guidance.
+
 ## Overview
 
 Minty is a simple yet powerful tool that generates static files from Handlebars templates and JSON data. It can process any file type - HTML, CSS, JSON, Markdown, configuration files, and more. It's designed to be used as a Git submodule, making it easy to integrate into any project.
