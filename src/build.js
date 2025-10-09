@@ -8,7 +8,6 @@ import { loadData } from "./data.js";
 import { findTemplates } from "./templates.js";
 import { renderTemplate } from "./renderer.js";
 import { clearDist, copyStaticFiles, writeRenderedFile } from "./files.js";
-import { updateAIContext } from "./ai-context.js";
 import { join } from "path";
 
 /**
@@ -126,21 +125,7 @@ export async function build() {
 
     const buildTime = Date.now() - startTime;
 
-    // Step 7: Update AI Context with build statistics
-    console.log("🤖 Updating AI context...");
-    await updateAIContext({
-      lastBuild: new Date().toISOString(),
-      buildTimeMs: buildTime,
-      templatesProcessed: templates.length,
-      filesGenerated: successCount,
-      wildcardFilesGenerated: wildcardGeneratedCount,
-      errorCount: errorCount,
-      dataKeys: pageKeys.length,
-      extensions: config.extensions,
-    });
-    console.log("✓ AI context updated\n");
-
-    // Step 8: Summary
+    // Step 7: Summary
     console.log("📊 Build Summary:");
     console.log(`  - Templates processed: ${templates.length}`);
     console.log(`  - Files generated: ${successCount}`);

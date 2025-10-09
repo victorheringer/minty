@@ -4,7 +4,7 @@
     "type": "universal-template-engine",
     "description": "Lightweight, modular template engine that processes any file type using Handlebars.js and JSON data",
     "version": "1.0.0",
-    "lastUpdate": "2025-10-09T00:40:54.571Z",
+    "lastUpdate": "2025-10-09T01:03:26.726Z",
     "aiContextVersion": "1.0.0"
   },
   "architecture": {

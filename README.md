@@ -462,52 +462,75 @@ yarn build
 
 ## AI Context System 🤖
 
-Minty includes an AI-optimized context system that creates a comprehensive project representation for better AI assistant collaboration. This system automatically analyzes your project structure, patterns, and dependencies to provide AI assistants with rich context for more accurate code assistance.
+Minty includes an AI-optimized context system specifically for **Minty development**. This system documents Minty's architecture, patterns, and codebase to help AI assistants better understand and contribute to the Minty project itself.
 
-### Automatic Updates
+### Minty Development Context
 
-The AI context is automatically updated every time you run a build:
+- **File**: `.minty-ai-context.json` (inside Minty repository)
+- **Purpose**: Documents Minty's architecture for development and maintenance
+- **Updated**: Manually via `yarn minty ai-context` or `yarn ai-context`
+- **Content**: Minty's code structure, modules, functions, and development patterns
 
-```bash
-yarn minty build
-```
+### Manual Context Generation
 
-This updates `.minty-ai-context.json` with:
-
-- Current project architecture
-- Build statistics and performance metrics
-- Template patterns and data relationships
-- Extension configurations and file mappings
-- Recent changes and timestamps
-
-### Manual Generation
-
-You can also generate the AI context manually:
+To update Minty's development context:
 
 ```bash
 yarn minty ai-context
+# or
+yarn ai-context
 ```
 
-Or add it to your parent project's scripts:
+Or add it to your development scripts:
 
 ```json
 {
   "scripts": {
-    "build": "cd minty && yarn minty build",
-    "ai-context": "cd minty && yarn minty ai-context"
+    "update-docs": "yarn ai-context"
   }
 }
 ```
 
 ### AI Context Benefits
 
-- 🎯 **Faster AI Understanding**: Provides structured project overview instead of requiring file-by-file analysis
-- 🔄 **Real-time Updates**: Context stays synchronized with your project changes
-- 📊 **Build Analytics**: Tracks performance and generation patterns over time
-- 🧠 **Pattern Recognition**: Maps relationships between templates, data, and outputs
-- 🎨 **Architecture Clarity**: Clear separation of concerns and data flow documentation
+- 🎯 **Development Focus**: Specifically designed for Minty development and maintenance
+- 🧠 **Architecture Mapping**: Clear documentation of Minty's code structure and patterns
+- 🔄 **Development Aid**: Helps AI assistants understand Minty's codebase for contributions
+- 📝 **Self-Documenting**: Keeps architectural documentation synchronized with code changes
 
-The AI context file (`.minty-ai-context.json`) should be committed to version control to maintain consistency across development environments and team collaboration.
+### File Location
+
+```plaintext
+/minty                         ← Minty repository
+├─ .minty-ai-context.json      ← Minty's development context
+├─ src/                        ← Source code
+├─ bin/                        ← CLI entry point
+└─ README.md                   ← Documentation
+```
+
+The AI context file should be committed to version control to maintain consistency across development environments.
+
+### AI Context Benefits
+
+- 🎯 **Project Understanding**: AI gets instant context about your specific project structure
+- � **Build Analytics**: Tracks your project's build patterns and performance over time
+- 🧠 **Pattern Recognition**: Maps relationships between your templates, data, and outputs
+- 🎨 **Architecture Clarity**: Clear documentation of your project's setup and data flow
+- 🌐 **Remote/Local Awareness**: Understands if you're using remote or local data sources
+
+### File Locations
+
+```plaintext
+/your-project
+├─ .project-ai-context.json    ← Your project's AI context (auto-generated)
+├─ .mintyrc                    ← Configuration
+├─ data.json                   ← Your data (or remote URL)
+├─ /minty                      ← Minty submodule
+│   └─ .minty-ai-context.json  ← Minty's AI context (for development)
+└─ /dist                       ← Generated output
+```
+
+Both AI context files should be committed to version control to maintain consistency across development environments and team collaboration.
 
 ## Usage
 

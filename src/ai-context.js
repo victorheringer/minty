@@ -194,7 +194,7 @@ function getBaseContext() {
 }
 
 /**
- * Generates a fresh AI context file
+ * Generates a fresh AI context file for Minty itself
  */
 export function generateAIContext() {
   updateAIContext();
