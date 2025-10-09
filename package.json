@@ -1,15 +1,14 @@
 {
   "name": "minty",
   "version": "1.0.0",
-  "description": "A lightweight, modular static site generator built with Node.js",
+  "description": "A lightweight, modular universal template engine built with Node.js",
   "type": "module",
   "main": "src/index.js",
   "bin": {
     "minty": "./bin/minty.js"
   },
   "scripts": {
-    "minty": "node bin/minty.js",
-    "ai-context": "node -e \"import('./src/ai-context.js').then(m => m.generateAIContext())\""
+    "minty": "node bin/minty.js"
   },
   "repository": "git@github.com:victorheringer/minty.git",
   "author": "Victor Heringer <victorhugo.heringer@hotmail.com>",

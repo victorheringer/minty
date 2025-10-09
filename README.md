@@ -6,7 +6,9 @@ A lightweight, modular universal template engine built with Node.js and Handleba
 
 ## Overview
 
-Minty is a simple yet powerful tool that generates static files from Handlebars templates and JSON data. It can process any file type - HTML, CSS, JSON, Markdown, configuration files, and more. It's designed to be used as a Git submodule, making it easy to integrate into any project.
+Minty is a simple yet powerful tool that generates static files from Handlebars templates and JSON data. It can process any file type - HTML, CSS, JSON, Markdown, configuration files, and more. It's designedThe AI context file should be committed to version control to maintain consistency across development environments.
+
+## Usaged as a Git submodule, making it easy to integrate into any project.
 
 **Key Features:**
 
@@ -470,28 +472,8 @@ Minty includes an AI-optimized context system specifically for **Minty developme
 
 - **File**: `.minty-ai-context.json` (inside Minty repository)
 - **Purpose**: Documents Minty's architecture for development and maintenance
-- **Updated**: Manually via `yarn minty ai-context` or `yarn ai-context`
+- **Updated**: Manually by AI assistants when needed
 - **Content**: Minty's code structure, modules, functions, and development patterns
-
-### Manual Context Generation
-
-To update Minty's development context:
-
-```bash
-yarn minty ai-context
-# or
-yarn ai-context
-```
-
-Or add it to your development scripts:
-
-```json
-{
-  "scripts": {
-    "update-docs": "yarn ai-context"
-  }
-}
-```
 
 ### AI Context Benefits
 
@@ -502,12 +484,21 @@ Or add it to your development scripts:
 
 ### File Location
 
+````plaintext
+### File Location
+
 ```plaintext
 /minty                         ← Minty repository
 ├─ .minty-ai-context.json      ← Minty's development context
 ├─ src/                        ← Source code
 ├─ bin/                        ← CLI entry point
 └─ README.md                   ← Documentation
+````
+
+The AI context file should be committed to version control to maintain consistency across development environments.
+
+## Usage
+
 ```
 
 The AI context file should be committed to version control to maintain consistency across development environments.
@@ -519,21 +510,6 @@ The AI context file should be committed to version control to maintain consisten
 - 🧠 **Pattern Recognition**: Maps relationships between your templates, data, and outputs
 - 🎨 **Architecture Clarity**: Clear documentation of your project's setup and data flow
 - 🌐 **Remote/Local Awareness**: Understands if you're using remote or local data sources
-
-### File Locations
-
-```plaintext
-/your-project
-├─ .project-ai-context.json    ← Your project's AI context (auto-generated)
-├─ .mintyrc                    ← Configuration
-├─ data.json                   ← Your data (or remote URL)
-├─ /minty                      ← Minty submodule
-│   └─ .minty-ai-context.json  ← Minty's AI context (for development)
-└─ /dist                       ← Generated output
-```
-
-Both AI context files should be committed to version control to maintain consistency across development environments and team collaboration.
-
 ## Usage
 
 ```
@@ -607,4 +583,7 @@ MIT
 ---
 
 Built with 🌿 by Victor Heringer
+
+```
+
 ```
