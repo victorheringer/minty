@@ -7,105 +7,65 @@
     "lastUpdate": "2025-10-09T01:03:26.726Z",
     "aiContextVersion": "1.0.0"
   },
+  "project-definition": {
+    "what-is-minty": "Minty is a UNIVERSAL TEMPLATE ENGINE, not just a static site generator",
+    "core-concept": "Process ANY file type (HTML, CSS, JSON, Markdown, etc.) as templates using Handlebars.js",
+    "key-distinction": "Unlike static site generators that focus on HTML/websites, Minty can generate ANY file type from templates",
+    "use-cases": [
+      "static-websites",
+      "configuration-files",
+      "documentation-generation",
+      "css-with-variables",
+      "json-api-responses",
+      "any-text-based-file"
+    ],
+    "not-limited-to": "websites or HTML - can process any text-based file format",
+    "primary-strength": "universal file type support with template processing"
+  },
   "architecture": {
     "core": {
       "config": {
         "file": "src/config.js",
         "purpose": "Load and validate .mintyrc configuration file from parent directory",
         "dependencies": [],
-        "inputs": [
-          ".mintyrc"
-        ],
-        "outputs": [
-          "config-object"
-        ],
-        "key-functions": [
-          "loadConfig"
-        ],
-        "configuration-fields": [
-          "jsonPath",
-          "rootDir",
-          "distDir",
-          "extensions"
-        ]
+        "inputs": [".mintyrc"],
+        "outputs": ["config-object"],
+        "key-functions": ["loadConfig"],
+        "configuration-fields": ["jsonPath", "rootDir", "distDir", "extensions"]
       },
       "data": {
         "file": "src/data.js",
         "purpose": "Load and validate JSON data file containing template content",
-        "dependencies": [
-          "config"
-        ],
-        "inputs": [
-          "data.json"
-        ],
-        "outputs": [
-          "data-object"
-        ],
-        "key-functions": [
-          "loadData"
-        ],
-        "validates": [
-          "common-key-exists",
-          "json-syntax"
-        ]
+        "dependencies": ["config"],
+        "inputs": ["data.json"],
+        "outputs": ["data-object"],
+        "key-functions": ["loadData"],
+        "validates": ["common-key-exists", "json-syntax"]
       },
       "templates": {
         "file": "src/templates.js",
         "purpose": "Discover template and partial files with configured extensions",
-        "dependencies": [
-          "config"
-        ],
-        "inputs": [
-          "template-files",
-          "partial-files"
-        ],
-        "outputs": [
-          "template-list",
-          "partial-list"
-        ],
-        "key-functions": [
-          "findTemplates",
-          "findPartials"
-        ],
-        "patterns": [
-          "*.template.{ext}",
-          "*.partial.{ext}"
-        ]
+        "dependencies": ["config"],
+        "inputs": ["template-files", "partial-files"],
+        "outputs": ["template-list", "partial-list"],
+        "key-functions": ["findTemplates", "findPartials"],
+        "patterns": ["*.template.{ext}", "*.partial.{ext}"]
       },
       "renderer": {
         "file": "src/renderer.js",
         "purpose": "Compile Handlebars templates and merge with data",
-        "dependencies": [
-          "templates",
-          "data",
-          "partials"
-        ],
-        "inputs": [
-          "template-content",
-          "merged-data"
-        ],
-        "outputs": [
-          "rendered-content"
-        ],
-        "key-functions": [
-          "renderTemplate",
-          "checkWildcard"
-        ],
+        "dependencies": ["templates", "data", "partials"],
+        "inputs": ["template-content", "merged-data"],
+        "outputs": ["rendered-content"],
+        "key-functions": ["renderTemplate", "checkWildcard"],
         "template-engine": "handlebars"
       },
       "partials": {
         "file": "src/partials.js",
         "purpose": "Process and substitute partial template includes",
-        "dependencies": [
-          "templates"
-        ],
-        "inputs": [
-          "template-with-partials",
-          "partial-files"
-        ],
-        "outputs": [
-          "processed-template"
-        ],
+        "dependencies": ["templates"],
+        "inputs": ["template-with-partials", "partial-files"],
+        "outputs": ["processed-template"],
         "key-functions": [
           "processPartials",
           "renderPartial",
@@ -119,25 +79,11 @@
       "files": {
         "file": "src/files.js",
         "purpose": "Handle file operations - clear, copy, write",
-        "dependencies": [
-          "config"
-        ],
-        "inputs": [
-          "source-files"
-        ],
-        "outputs": [
-          "dist-files"
-        ],
-        "key-functions": [
-          "clearDist",
-          "copyStaticFiles",
-          "writeRenderedFile"
-        ],
-        "operations": [
-          "clear-dist",
-          "copy-static",
-          "write-rendered"
-        ]
+        "dependencies": ["config"],
+        "inputs": ["source-files"],
+        "outputs": ["dist-files"],
+        "key-functions": ["clearDist", "copyStaticFiles", "writeRenderedFile"],
+        "operations": ["clear-dist", "copy-static", "write-rendered"]
       },
       "build": {
         "file": "src/build.js",
@@ -150,15 +96,9 @@
           "partials",
           "files"
         ],
-        "inputs": [
-          "all-source-files"
-        ],
-        "outputs": [
-          "complete-dist"
-        ],
-        "key-functions": [
-          "build"
-        ],
+        "inputs": ["all-source-files"],
+        "outputs": ["complete-dist"],
+        "key-functions": ["build"],
         "process-steps": [
           "load-config",
           "load-data",
@@ -172,13 +112,8 @@
     "cli": {
       "file": "bin/minty.js",
       "purpose": "Command-line interface entry point",
-      "commands": [
-        "build",
-        "help"
-      ],
-      "dependencies": [
-        "build"
-      ],
+      "commands": ["build", "help"],
+      "dependencies": ["build"],
       "entry-point": true
     },
     "main": {
@@ -201,20 +136,11 @@
       "example": {
         "json": "product*: { laptop: {...}, phone: {...} }",
         "template": "product.template.html",
-        "output": [
-          "product.laptop.html",
-          "product.phone.html"
-        ]
+        "output": ["product.laptop.html", "product.phone.html"]
       },
       "filename-pattern": "{templateName}.{subKey}.{extension}",
-      "data-merge": [
-        "common",
-        "subKey-data"
-      ],
-      "works-with": [
-        "all-extensions",
-        "partials"
-      ]
+      "data-merge": ["common", "subKey-data"],
+      "works-with": ["all-extensions", "partials"]
     },
     "partials": {
       "description": "Include reusable template components",
@@ -225,34 +151,16 @@
         "<!-- @filename.partial.ext -->"
       ],
       "data-source": "filename_ key in JSON",
-      "data-merge": [
-        "common",
-        "partial_",
-        "template-data"
-      ],
+      "data-merge": ["common", "partial_", "template-data"],
       "priority": "template-data > partial-data > common-data",
-      "works-with": [
-        "all-extensions",
-        "wildcards"
-      ]
+      "works-with": ["all-extensions", "wildcards"]
     },
     "extensions": {
       "description": "Process any file type as templates",
       "trigger": "extensions field in .mintyrc",
       "behavior": "Discover and process *.template.{ext} files",
-      "default": [
-        "html"
-      ],
-      "examples": [
-        "html",
-        "css",
-        "json",
-        "md",
-        "txt",
-        "js",
-        "xml",
-        "yaml"
-      ],
+      "default": ["html"],
+      "examples": ["html", "css", "json", "md", "txt", "js", "xml", "yaml"],
       "template-pattern": "name.template.{ext}",
       "partial-pattern": "name.partial.{ext}",
       "output-pattern": "name.{ext}"
@@ -261,17 +169,8 @@
   "data-flow": {
     "configuration": {
       "source": ".mintyrc in parent directory",
-      "fields": [
-        "jsonPath",
-        "rootDir",
-        "distDir",
-        "extensions"
-      ],
-      "validation": [
-        "required-fields",
-        "path-resolution",
-        "extensions-format"
-      ]
+      "fields": ["jsonPath", "rootDir", "distDir", "extensions"],
+      "validation": ["required-fields", "path-resolution", "extensions-format"]
     },
     "content": {
       "source": "JSON file specified in jsonPath",
@@ -294,100 +193,48 @@
     "new-file-types": {
       "method": "Add extensions to .mintyrc",
       "impact": "Automatic discovery and processing",
-      "files-affected": [
-        "config.js",
-        "templates.js",
-        "partials.js"
-      ]
+      "files-affected": ["config.js", "templates.js", "partials.js"]
     },
     "new-template-engines": {
       "method": "Replace Handlebars in renderer.js",
       "impact": "Change template compilation logic",
-      "files-affected": [
-        "renderer.js",
-        "partials.js"
-      ]
+      "files-affected": ["renderer.js", "partials.js"]
     },
     "new-data-sources": {
       "method": "Modify data.js loadData function",
       "impact": "Support different data formats",
-      "files-affected": [
-        "data.js",
-        "build.js"
-      ]
+      "files-affected": ["data.js", "build.js"]
     },
     "new-partial-patterns": {
       "method": "Update regex in partials.js",
       "impact": "Support different import syntaxes",
-      "files-affected": [
-        "partials.js"
-      ]
+      "files-affected": ["partials.js"]
     },
     "new-build-steps": {
       "method": "Modify build.js process",
       "impact": "Add pre/post processing",
-      "files-affected": [
-        "build.js"
-      ]
+      "files-affected": ["build.js"]
     }
   },
   "usage-patterns": {
     "web-development": {
-      "extensions": [
-        "html",
-        "css",
-        "js"
-      ],
-      "common-partials": [
-        "header",
-        "footer",
-        "nav"
-      ],
-      "wildcards": [
-        "pages",
-        "components"
-      ]
+      "extensions": ["html", "css", "js"],
+      "common-partials": ["header", "footer", "nav"],
+      "wildcards": ["pages", "components"]
     },
     "documentation": {
-      "extensions": [
-        "md",
-        "txt",
-        "html"
-      ],
-      "common-partials": [
-        "header",
-        "footer",
-        "toc"
-      ],
-      "wildcards": [
-        "articles",
-        "guides"
-      ]
+      "extensions": ["md", "txt", "html"],
+      "common-partials": ["header", "footer", "toc"],
+      "wildcards": ["articles", "guides"]
     },
     "configuration": {
-      "extensions": [
-        "json",
-        "yaml",
-        "xml"
-      ],
-      "common-partials": [
-        "common-settings"
-      ],
-      "wildcards": [
-        "environments",
-        "services"
-      ]
+      "extensions": ["json", "yaml", "xml"],
+      "common-partials": ["common-settings"],
+      "wildcards": ["environments", "services"]
     },
     "multi-language": {
-      "extensions": [
-        "html",
-        "json",
-        "md"
-      ],
-      "wildcards": [
-        "languages",
-        "locales"
-      ],
+      "extensions": ["html", "json", "md"],
+      "wildcards": ["languages", "locales"],
       "data-pattern": "lang* or locale*"
     }
   },
@@ -397,23 +244,28 @@
       "handlebars-compilation",
       "partial-processing"
     ],
-    "optimizations": [
-      "template-caching",
-      "partial-map",
-      "batch-processing"
+    "optimizations": ["template-caching", "partial-map", "batch-processing"],
+    "scaling": ["parallel-rendering", "incremental-builds", "watch-mode"]
+  },
+  "ai-guidance": {
+    "remember": "Minty is a UNIVERSAL TEMPLATE ENGINE - always refer to it correctly",
+    "correct-terminology": [
+      "universal template engine",
+      "template processor",
+      "file generator from templates",
+      "multi-format template engine"
     ],
-    "scaling": [
-      "parallel-rendering",
-      "incremental-builds",
-      "watch-mode"
-    ]
+    "avoid-calling-it": [
+      "static site generator only",
+      "website builder only",
+      "HTML generator only"
+    ],
+    "emphasize": "Minty processes ANY file type, not just websites",
+    "when-explaining": "Always mention universal file support as key differentiator"
   },
   "ai-context": {
     "purpose": "Optimized project representation for AI understanding and evolution",
-    "activation": [
-      "file-presence",
-      "explicit-request"
-    ],
+    "activation": ["file-presence", "explicit-request"],
     "keywords": [
       "consulte o contexto IA",
       "use o mapa neural",
