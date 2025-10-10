@@ -1,81 +1,85 @@
 /**
  * Configuration loader for Minty
- * Reads and validates the .mintyrc configuration file from the parent directory
+ * Reads and validates the .mintyrc configuration file with fallback to defaults
  */
 
-import { readFileSync, existsSync } from "fs";
+import { readFile } from "fs/promises";
 import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { access } from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Default configuration
+export const defaultConfig = Object.freeze({
+  templates: "templates",
+  output: "build",
+  data: "data.json",
+  extensions: [".html", ".css", ".js", ".md", ".txt", ".xml", ".json"],
+});
+
 /**
  * Loads and validates the .mintyrc configuration file
- * @returns {Object} Configuration object with jsonPath, rootDir, distDir, and extensions
- * @throws {Error} If configuration file is missing or invalid
+ * Falls back to default configuration if file is not found
+ * @returns {Object} Configuration object with templates, output, data, and extensions
  */
-export function loadConfig() {
-  // Look for .mintyrc in the parent directory of the project root
-  const projectRoot = resolve(__dirname, "..");
-  const parentDir = resolve(projectRoot, "..");
-  const configPath = join(parentDir, ".mintyrc");
+export async function loadConfig() {
+  let currentDir = resolve(__dirname, "..");
+  let configFound = false;
+  let config = {};
 
-  if (!existsSync(configPath)) {
-    throw new Error(
-      `Configuration file not found at ${configPath}\n` +
-        "Please create a .mintyrc file in the parent directory of the Minty project."
-    );
+  // Search for .mintyrc in current and parent directories
+  while (currentDir !== resolve(currentDir, "..")) {
+    const configPath = join(currentDir, ".mintyrc");
+
+    try {
+      await access(configPath);
+      const configContent = await readFile(configPath, "utf8");
+      config = JSON.parse(configContent);
+      configFound = true;
+      break;
+    } catch (error) {
+      // Continue searching in parent directory
+      currentDir = resolve(currentDir, "..");
+    }
   }
 
-  try {
-    const configContent = readFileSync(configPath, "utf-8");
-    const config = JSON.parse(configContent);
+  // If no config found, use defaults
+  if (!configFound) {
+    return { ...defaultConfig };
+  }
 
-    // Validate required fields
-    if (!config.jsonPath) {
-      throw new Error(".mintyrc missing required field: jsonPath");
-    }
-    if (!config.rootDir) {
-      throw new Error(".mintyrc missing required field: rootDir");
-    }
-    if (!config.distDir) {
-      throw new Error(".mintyrc missing required field: distDir");
-    }
+  // Merge with defaults and validate
+  const finalConfig = { ...defaultConfig };
 
-    // Parse extensions (default to 'html' if not provided)
-    let extensions = ["html"]; // Default extensions
-    if (config.extensions) {
-      if (typeof config.extensions === "string") {
-        extensions = config.extensions
-          .split(",")
-          .map((ext) => ext.trim())
-          .filter((ext) => ext.length > 0);
-      } else {
-        throw new Error(
-          ".mintyrc field 'extensions' must be a comma-separated string (e.g., 'html,css,txt')"
-        );
-      }
-    }
+  // Validate and set templates directory
+  if (typeof config.templates === "string" && config.templates.trim()) {
+    finalConfig.templates = config.templates.trim();
+  }
 
-    // Validate extensions
-    if (extensions.length === 0) {
-      throw new Error(
-        ".mintyrc field 'extensions' cannot be empty. Use at least one extension like 'html'"
+  // Validate and set output directory
+  if (typeof config.output === "string" && config.output.trim()) {
+    finalConfig.output = config.output.trim();
+  }
+
+  // Validate and set data file
+  if (typeof config.data === "string" && config.data.trim()) {
+    finalConfig.data = config.data.trim();
+  }
+
+  // Validate and set extensions
+  if (Array.isArray(config.extensions) && config.extensions.length > 0) {
+    const validExtensions = config.extensions.filter(
+      (ext) => typeof ext === "string" && ext.trim().length > 0
+    );
+
+    if (validExtensions.length > 0) {
+      finalConfig.extensions = validExtensions.map((ext) =>
+        ext.startsWith(".") ? ext : `.${ext}`
       );
     }
-
-    // Resolve paths relative to the parent directory
-    return {
-      jsonPath: resolve(parentDir, config.jsonPath),
-      rootDir: resolve(parentDir, config.rootDir),
-      distDir: resolve(parentDir, config.distDir),
-      extensions: extensions,
-    };
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      throw new Error(`Invalid JSON in .mintyrc: ${error.message}`);
-    }
-    throw error;
   }
+
+  return finalConfig;
 }

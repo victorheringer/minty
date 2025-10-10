@@ -10,7 +10,11 @@ import { readFileSync, existsSync } from "fs";
  * @param {string} str - String to check
  * @returns {boolean} True if the string is a valid URL
  */
-function isValidUrl(str) {
+export function isValidUrl(str) {
+  if (!str || typeof str !== "string") {
+    return false;
+  }
+
   try {
     const url = new URL(str);
     return url.protocol === "http:" || url.protocol === "https:";

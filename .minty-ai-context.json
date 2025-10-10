@@ -296,5 +296,124 @@
     "step-5": "Verify your understanding matches the context before responding",
     "enforcement": "If you catch yourself making assumptions, STOP and consult this file",
     "success-indicator": "You correctly identify Minty as a universal template engine, not just a static site generator"
+  },
+  "testing-standards": {
+    "ABSOLUTE-REQUIREMENT": "100% CODE COVERAGE IS MANDATORY - NO EXCEPTIONS",
+    "coverage-policy": {
+      "statements": "MUST be exactly 100% - anything less is FAILURE",
+      "branches": "MUST be exactly 100% - anything less is FAILURE",
+      "functions": "MUST be exactly 100% - anything less is FAILURE",
+      "lines": "MUST be exactly 100% - anything less is FAILURE",
+      "acceptance-criteria": "ALL four metrics must reach 100% simultaneously"
+    },
+    "AI-MUST-NEVER": [
+      "Accept coverage below 100%",
+      "Say 'almost 100% is good enough'",
+      "Claim 99.x% is acceptable",
+      "Suggest lowering coverage thresholds",
+      "Mark task as complete without 100% coverage",
+      "Rationalize why 100% cannot be achieved",
+      "Give up on reaching 100% coverage"
+    ],
+    "AI-MUST-ALWAYS": [
+      "Persist until 100% coverage is achieved on ALL metrics",
+      "Find creative solutions to test difficult code paths",
+      "Refactor code if necessary to make it testable",
+      "Add comprehensive edge case tests",
+      "Test error conditions and exception paths",
+      "Verify every single line of code is executed in tests",
+      "Keep trying different approaches until 100% is reached"
+    ],
+    "file-naming-conventions": {
+      "test-files": "MUST use .spec.js extension (e.g., data.spec.js)",
+      "mock-files": "MUST use .mock.js extension (e.g., fs.mock.js)",
+      "NEVER-use": [".test.js", "-test.js", "_test.js", "test.js"],
+      "enforcement": "Any test file without .spec.js extension is WRONG",
+      "location": "All tests MUST be in tests/ directory"
+    },
+    "forbidden-files": {
+      "NEVER-create": [
+        "scripts/validate-tests.js",
+        "tests/README.md",
+        "TESTS_REPORT.md",
+        "test-report.json",
+        "coverage-summary.json"
+      ],
+      "rationale": "These files are unnecessary clutter - tests should be self-documenting"
+    },
+    "testing-framework": {
+      "framework": "Jest",
+      "version": "^30.2.0",
+      "module-system": "ESM (native ES modules)",
+      "node-flag": "--experimental-vm-modules",
+      "mock-system": "jest.unstable_mockModule for ESM compatibility"
+    },
+    "test-structure": {
+      "organization": "One .spec.js file per source file",
+      "mock-strategy": "Use jest.unstable_mockModule for all external dependencies",
+      "pattern": "Arrange-Act-Assert",
+      "isolation": "Each test must be completely isolated with beforeEach/afterEach",
+      "coverage-requirements": "Every function, branch, statement, and line must be tested"
+    },
+    "edge-cases-required": [
+      "Error conditions and exceptions",
+      "Empty inputs and null/undefined values",
+      "Boundary conditions (min/max values)",
+      "Invalid data formats",
+      "Network failures (for remote calls)",
+      "File system errors (for I/O operations)",
+      "Regex edge cases and malformed patterns",
+      "Concurrent operations",
+      "Missing optional parameters"
+    ],
+    "success-definition": {
+      "ONLY-SUCCESS-WHEN": "All 4 coverage metrics show exactly 100%",
+      "verification": "npm test must exit with code 0 and show 100% in coverage report",
+      "reporting": "Coverage table must show 100 | 100 | 100 | 100 for all files",
+      "NO-SUCCESS-IF": "Any metric is 99.x% or lower, even if all tests pass"
+    },
+    "AI-behavior-on-coverage-gaps": {
+      "if-coverage-below-100": [
+        "Immediately identify which lines/branches are not covered",
+        "Read the source code to understand why they're not covered",
+        "Create specific tests to cover those exact lines",
+        "Try different input combinations to trigger uncovered branches",
+        "Mock dependencies differently to reach uncovered code paths",
+        "Refactor tests if current approach cannot reach 100%",
+        "Keep iterating until 100% is achieved"
+      ],
+      "NEVER-say": [
+        "We reached 99.x% which is excellent",
+        "The remaining lines are not important",
+        "100% is not practical",
+        "This is good enough",
+        "We can skip these edge cases"
+      ],
+      "persistence-required": "Continue trying new approaches indefinitely until 100% is reached"
+    },
+    "quality-over-quantity": {
+      "principle": "Every test must be meaningful and test actual behavior",
+      "avoid": "Tests that only call functions without assertions",
+      "ensure": "Tests verify correct output, error handling, and side effects",
+      "coverage-means": "Every line is not only executed but properly tested"
+    },
+    "AI-accountability": {
+      "responsibility": "AI is 100% responsible for achieving 100% coverage",
+      "no-excuses": "There is no valid reason to accept less than 100%",
+      "success-metric": "Coverage report shows 100 | 100 | 100 | 100",
+      "failure-metric": "Anything else is complete failure",
+      "mindset": "100% or nothing - partial success does not exist"
+    },
+    "change-management": {
+      "every-change": "Every new feature, bugfix, or configuration change MUST include at least one automated test that proves the behavior and keeps coverage at 100%",
+      "scope": [
+        "exercise both happy paths and failure paths introduced by the change",
+        "update existing test suites whenever the behavior is modified",
+        "block commits or merges unless npm test/yarn test reports 100% on all metrics"
+      ],
+      "pull-requests": "Update the PR description to highlight which new or adjusted tests safeguard the change",
+      "documentation": "If the change exposes new capabilities, update README.md or relevant docs after ensuring the tests are in place",
+      "enforcement": "If it is not possible to create tests immediately, the change MUST NOT proceed until full coverage is guaranteed"
+    }
   }
 }

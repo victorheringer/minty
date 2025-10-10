@@ -8,6 +8,25 @@ import Handlebars from "handlebars";
 import { findPartials } from "./templates.js";
 
 /**
+ * Extracts the first truthy capture from a regex match
+ * @param {RegExpExecArray} match - Regex execution result
+ * @returns {string|null} Partial file name if present
+ */
+export function extractPartialFileName(match) {
+  if (!Array.isArray(match)) {
+    return null;
+  }
+
+  for (let i = 1; i < match.length; i++) {
+    if (match[i]) {
+      return match[i];
+    }
+  }
+
+  return null;
+}
+
+/**
  * Creates a map of partial names to their file paths for quick lookup
  * @param {string} rootDir - Root directory to search for partials
  * @param {Array<string>} extensions - Array of file extensions to search for
@@ -70,16 +89,11 @@ export function processPartials(
   while ((match = partialRegex.exec(templateContent)) !== null) {
     const fullMatch = match[0]; // The complete match (with or without comment)
 
-    // Find which capture group matched (which extension)
-    let partialFileName = null;
-    for (let i = 1; i < match.length; i++) {
-      if (match[i]) {
-        partialFileName = match[i];
-        break;
-      }
-    }
+    const partialFileName = extractPartialFileName(match);
 
-    if (!partialFileName) continue;
+    if (!partialFileName) {
+      continue;
+    }
 
     if (partialMap.has(partialFileName)) {
       const partialPath = partialMap.get(partialFileName);
@@ -89,12 +103,15 @@ export function processPartials(
       const partialName = partialFileName.replace(/\.partial\.\w+$/, "");
       const partialDataKey = `${partialName}_`;
 
+      const partialData = data[partialDataKey] ? data[partialDataKey] : {};
+      const pageData = pageKey && data[pageKey] ? data[pageKey] : {};
+
       // Merge data: common + partial-specific + page-specific
       // Page-specific data takes highest precedence
       const mergedData = {
         ...data.common,
-        ...(data[partialDataKey] || {}),
-        ...(data[pageKey] || {}),
+        ...partialData,
+        ...pageData,
       };
 
       try {

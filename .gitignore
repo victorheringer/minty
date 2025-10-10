@@ -25,3 +25,6 @@ yarn-error.log*
 # Environment
 .env
 .env.local
+
+# Tests
+coverage
