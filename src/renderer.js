@@ -8,6 +8,15 @@ import Handlebars from "handlebars";
 import { processPartials } from "./partials.js";
 import { dirname } from "path";
 
+// Register custom Handlebars helpers
+Handlebars.registerHelper("range", function (n) {
+  const result = [];
+  for (let i = 0; i < n; i++) {
+    result.push(i);
+  }
+  return result;
+});
+
 /**
  * Checks if a template should use wildcard generation (multiple pages)
  * @param {string} keyName - The key name from the template

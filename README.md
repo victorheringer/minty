@@ -390,6 +390,20 @@ Minty supports all standard Handlebars helpers:
 - **`{{#unless condition}}`** - Negative conditional
 - **`{{{raw}}}`** - Unescaped HTML output
 
+#### Custom helper: `range`
+
+Minty also registers a small built-in helper inside `src/renderer.js` to make it easier to create repeated markup without extra data plumbing. The `range` helper returns an array of integers from `0` up to `n - 1`, which you can iterate over with `each`:
+
+```handlebars
+<ul class="rating">
+  {{#each (range 5)}}
+    <li class="star">★</li>
+  {{/each}}
+</ul>
+```
+
+Because the helper is registered automatically when the renderer loads, you can use it in any template, partial, or wildcard render without additional configuration.
+
 ### Multi-Extension Examples
 
 **Dynamic CSS** (`style.template.css`):
