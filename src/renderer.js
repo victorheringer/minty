@@ -102,6 +102,7 @@ export function renderTemplate(
     // Merge common data with page-specific data
     // Page-specific data takes precedence over common data
     const mergedData = {
+      $database: data,
       ...data.common,
       ...pageData,
     };

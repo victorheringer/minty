@@ -404,6 +404,18 @@ Minty also registers a small built-in helper inside `src/renderer.js` to make it
 
 Because the helper is registered automatically when the renderer loads, you can use it in any template, partial, or wildcard render without additional configuration.
 
+#### Global data reference: `$database`
+
+Every template and partial automatically receives a `$database` variable that contains the complete JSON data loaded by Minty (including `common`, page keys, wildcard collections, and partial-specific segments). This makes it easy to perform lookups or iterate over structures that aren't directly merged into the current context.
+
+```handlebars
+{{! script.template.js }}
+const database = $database; const pages = Object.keys(database).filter((key) =>
+!key.endsWith("*")); export default { site: database.common.siteName, pages, };
+```
+
+Use `$database` sparingly for cross-cutting lookups or generating derived structures while keeping the regular `common` + page data merge for most template fields.
+
 ### Multi-Extension Examples
 
 **Dynamic CSS** (`style.template.css`):

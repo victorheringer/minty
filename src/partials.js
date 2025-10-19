@@ -92,6 +92,7 @@ export function processPartials(
       // Merge data: common + partial-specific + page-specific
       // Page-specific data takes highest precedence
       const mergedData = {
+        $database: data,
         ...data.common,
         ...(data[partialDataKey] || {}),
         ...(data[pageKey] || {}),
