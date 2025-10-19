@@ -14,6 +14,14 @@ import {
 } from "fs";
 import { join, dirname, relative } from "path";
 
+const STATIC_COPY_IGNORE_PATTERNS = [".template.", ".partial."];
+
+function shouldIgnoreStaticFile(fileName) {
+  return STATIC_COPY_IGNORE_PATTERNS.some((pattern) =>
+    fileName.includes(pattern)
+  );
+}
+
 /**
  * Clears the dist directory completely
  * @param {string} distDir - Path to the dist directory
@@ -44,8 +52,8 @@ function copyFilesRecursive(srcDir, destDir, baseDir) {
     if (stat.isDirectory()) {
       mkdirSync(destPath, { recursive: true });
       copyFilesRecursive(srcPath, destDir, baseDir);
-    } else if (!file.endsWith(".template.html")) {
-      // Copy all files except .template.html files
+    } else if (!shouldIgnoreStaticFile(file)) {
+      // Copy all files except those matching ignore patterns
       const destFileDir = dirname(destPath);
       mkdirSync(destFileDir, { recursive: true });
       copyFileSync(srcPath, destPath);
